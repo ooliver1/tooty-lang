@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.0.0)
+project(tooty VERSION 0.0.0a)
+
+include(CTest)
+enable_testing()
+
+add_executable(tooty main.cpp)
+
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)
