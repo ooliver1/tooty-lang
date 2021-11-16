@@ -25,20 +25,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 
 using std::strstr;
 
-int main(int argc, char** argv) {
-    const char* dbl_dash = "--";
-    const char* sgl_dash = "-";
+int main(int argc, char **argv) {
     int i;
     for (i = 0; i < argc; i++) {
-        if (strstr(argv[i], dbl_dash) == argv[i]) {
+        if (strstr(argv[i], "--") == argv[i]) {
             printf("double %s\n", argv[i]);
         }
-        else if (strstr(argv[i], sgl_dash) == argv[i]) {
+        else if (strstr(argv[i], "-") == argv[i]) {
             printf("single %s\n", argv[i]);
         }
         else {
