@@ -25,6 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "./include/VERSION.h"
+
 #include <cstring>
 #include <iostream>
 #include <list>
@@ -44,7 +46,6 @@ struct Flags {
     vector<string> files;
     bool version = false;
     bool help = false;
-    string helpCmd = "";
     bool error = false;
     string errorMsg = "";
 };
@@ -53,7 +54,22 @@ Flags getFlags(int argc, char **argv);
 
 int main(int argc, char **argv) {
     Flags flags = getFlags(argc, argv);
-    cout << flags.version << endl;
+    if (flags.version) {
+        cout << "Tooty-lang version " << VERSION_MAJOR << "." << VERSION_MINOR
+             << "." << VERSION_MICRO << endl;
+        return 0;
+    }
+    if (flags.help) {
+        cout << "Tooty-lang v" << VERSION_MAJOR << "." << VERSION_MINOR << "."
+             << VERSION_MICRO << "\n\n"
+             << "Usage: tooty [options] [file] [options]\n"
+             << "\n"
+             << "Options:\n"
+             << "\n"
+             << "-v, --version : displays the version (major.minor.micro)\n"
+             << "-h, --help    : displays this help message and exits" << endl;
+        return 0;
+    }
     return 0;
 }
 
@@ -84,7 +100,6 @@ Flags getFlags(int argc, char **argv) {
                 }
                 else if (f == "h" || f == "help") {
                     flags.help = true;
-                    flags.helpCmd = string{argv[i + 1]};
                     return flags;
                 }
                 else {
@@ -92,6 +107,9 @@ Flags getFlags(int argc, char **argv) {
                     flags.errorMsg = "Unknown flag: " + arg;
                 }
             }
+        }
+        else {
+            flags.files.push_back(arg);
         }
     }
     return flags;
