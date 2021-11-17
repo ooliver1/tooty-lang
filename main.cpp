@@ -85,7 +85,7 @@ Flags getFlags(int argc, char **argv) {
                 else if (f == "h" || f == "help") {
                     flags.help = true;
                     flags.helpCmd = string{argv[i + 1]};
-                    i++;
+                    return flags;
                 }
                 else {
                     flags.error = true;
