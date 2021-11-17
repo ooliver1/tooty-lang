@@ -26,23 +26,73 @@ SOFTWARE.
 */
 
 #include <cstring>
+#include <iostream>
+#include <list>
 #include <stdio.h>
+#include <string>
+#include <vector>
 
+using std::cout;
+using std::endl;
+using std::list;
+using std::string;
 using std::strstr;
+using std::vector;
+
+struct Flags {
+    string path;
+    vector<string> files;
+    bool version = false;
+    bool help = false;
+    string helpCmd = "";
+    bool error = false;
+    string errorMsg = "";
+};
+
+Flags getFlags(int argc, char **argv);
 
 int main(int argc, char **argv) {
-    int i;
-    for (i = 0; i < argc; i++) {
-        if (strstr(argv[i], "--") == argv[i]) {
-            printf("double %s\n", argv[i]);
+    Flags flags = getFlags(argc, argv);
+    cout << flags.version << endl;
+    return 0;
+}
+
+Flags getFlags(int argc, char **argv) {
+    Flags flags;
+    for (int i = 0; i < argc; i++) { // base iterator
+        string arg{argv[i]};
+        if (i == 0) { // first arg
+            flags.path = arg;
         }
-        else if (strstr(argv[i], "-") == argv[i]) {
-            printf("single %s\n", argv[i]);
-        }
-        else {
-            printf("%s\n", argv[i]);
+        else if (arg.size() > 1 && arg[0] == '-') {
+            list<string> args;
+            if (arg.size() == 1) { // -a
+                args.push_back(arg.substr(1, string::npos));
+            }
+            else if (arg[1] == '-') { // --aa
+                args.push_back(arg.substr(2, string::npos));
+            }
+            else if (arg.size() > 1) { // -abc
+                for (char c: arg) {
+                    args.push_back(string{c});
+                }
+            }
+            for (const string &f: args) { // second iterator for "-abc"
+                if (f == "v" || f == "version") {
+                    flags.version = true;
+                    return flags;
+                }
+                else if (f == "h" || f == "help") {
+                    flags.help = true;
+                    flags.helpCmd = string{argv[i + 1]};
+                    i++;
+                }
+                else {
+                    flags.error = true;
+                    flags.errorMsg = "Unknown flag: " + arg;
+                }
+            }
         }
     }
-    // printf("argv[%d] = %s\n", i, argv[i]);
-    return 0;
+    return flags;
 }

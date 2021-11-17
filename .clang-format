@@ -27,3 +27,4 @@ BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
 IncludeBlocks: Regroup
 IndentCaseLabels: true
+SpaceBeforeRangeBasedForLoopColon: false
