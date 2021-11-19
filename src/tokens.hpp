@@ -135,16 +135,18 @@ const string IDENT = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
 class Token {
   public:
-    Token(string, int, TOKENS, string);
+    Token(string, int, int, TOKENS, string);
     int pos;
+    int line;
     TOKENS type;
     string filename;
     string value = "NULL";
     string toString() const;
 };
 
-Token::Token(string filename, int pos, TOKENS type, string value) {
-    this->pos = 0;
+Token::Token(string filename, int line, int pos, TOKENS type, string value) {
+    this->pos = pos;
+    this->line = line;
     this->type = type;
     this->filename = filename;
     if (!value.empty()) {
@@ -154,7 +156,7 @@ Token::Token(string filename, int pos, TOKENS type, string value) {
 
 string Token::toString() const {
     char *buf = 0;
-    snprintf(buf, 0, "<Token %s:%s type=%s value=%s>", this->filename,
-             this->pos, this->type, this->value);
+    snprintf(buf, 0, "<Token %s:%s:%s type=%s value=%s>", this->filename,
+             this->line, this->pos, this->type, this->value);
     return string{buf};
 }
