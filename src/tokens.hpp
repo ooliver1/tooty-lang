@@ -25,12 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <cstdio>
 #include <regex>
 #include <string>
 #include <unordered_map>
 
 using std::basic_regex;
+using std::snprintf;
 using std::string;
+using std::to_string;
 using std::unordered_map;
 
 enum TOKENS
@@ -121,8 +124,33 @@ const unordered_map<string, TOKENS> SYMBOLS = {
     {"*/", TOKENS::MCMTE},
 };
 
-const string SYM = "()[]{}<>\\|/:;+-.*=!@&%~^";
 const basic_regex<char> IDENT_RE{"/^[a-zA-Z_][a-zA-Z0-9]*/"};
 const basic_regex<char> NUMBER_RE{"/^[0-9]+/"};
 const basic_regex<char> STRING_RE{"/^\"[^\"]*\"/"};
 const basic_regex<char> CHAR_RE{"/^'.'/"};
+
+const string SYM = "()[]{}<>\\|/:;+-.*=!@&%~^";
+const string NUMS = "0123456789";
+const string IDENT = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+
+class Token {
+  public:
+    int pos;
+    TOKENS type;
+    string filename;
+    string value = NULL;
+    string fmtValue() {
+        if (this->type != NULL) {
+            return this->value;
+        }
+        else {
+            return "NULL";
+        }
+    };
+    string toString() const {
+        char *buf = 0;
+        snprintf(buf, 0, "<Token %s:%s type=%s value=%s>", this->filename,
+                 this->pos, this->type, this->value);
+        return string{buf};
+    };
+};
