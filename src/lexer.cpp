@@ -1,5 +1,5 @@
 /*
-SPDX - License - Identifier: MIT
+SPDX-License-Identifier: MIT
 Tooty-lang - A compiled and iterpreted language written in C++
 
 MIT License
@@ -25,4 +25,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-class Lexer {};
+#include "tokens.hpp"
+
+#include <list>
+#include <string>
+
+using std::list;
+using std::string;
+
+class Lexer {
+  public:
+    Lexer(string filename, string source);
+
+  private:
+    int pos = 0;
+    int line = 0;
+    string source;
+    string filename;
+    list<string> tokens;
+    char getChar() const;
+    Token processIdent() const;
+    Token processString() const;
+    Token processNumber() const;
+    Token processSymbol() const;
+};
+
+Lexer::Lexer(string filename, string source) {
+    this->filename = filename;
+    this->source = source;
+}
+
+char Lexer::getChar() const { return this->source.at(this->pos); }
