@@ -135,12 +135,22 @@ const string IDENT = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
 class Token {
   public:
+    Token(string, int, TOKENS, string);
     int pos;
     TOKENS type;
     string filename;
     string value = "NULL";
     string toString() const;
 };
+
+Token::Token(string filename, int pos, TOKENS type, string value) {
+    this->pos = 0;
+    this->type = type;
+    this->filename = filename;
+    if (!value.empty()) {
+        this->value = value;
+    }
+}
 
 string Token::toString() const {
     char *buf = 0;
