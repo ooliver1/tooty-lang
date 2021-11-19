@@ -139,10 +139,12 @@ class Token {
     TOKENS type;
     string filename;
     string value = "NULL";
-    string toString() const {
-        char *buf = 0;
-        snprintf(buf, 0, "<Token %s:%s type=%s value=%s>", this->filename,
-                 this->pos, this->type, this->value);
-        return string{buf};
-    };
+    string toString() const;
 };
+
+string Token::toString() const {
+    char *buf = 0;
+    snprintf(buf, 0, "<Token %s:%s type=%s value=%s>", this->filename,
+             this->pos, this->type, this->value);
+    return string{buf};
+}
