@@ -124,10 +124,10 @@ const unordered_map<string, TOKENS> SYMBOLS = {
     {"*/", TOKENS::MCMTE},
 };
 
-const basic_regex<char> IDENT_RE{"/^[a-zA-Z_][a-zA-Z0-9]*/"};
-const basic_regex<char> NUMBER_RE{"/^[0-9]+/"};
-const basic_regex<char> STRING_RE{"/^\"[^\"]*\"/"};
-const basic_regex<char> CHAR_RE{"/^'.'/"};
+const basic_regex<char> IDENT_RE{"^[a-zA-Z_][a-zA-Z0-9]*"};
+const basic_regex<char> NUMBER_RE{"^[0-9]+"};
+const basic_regex<char> STRING_RE{"^\"[^\"]*\""};
+const basic_regex<char> CHAR_RE{"^'.'"};
 
 const string SYM = "()[]{}<>\\|/:;+-.*=!@&%~^";
 const string NUMS = "0123456789";
