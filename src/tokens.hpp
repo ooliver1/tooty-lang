@@ -138,15 +138,7 @@ class Token {
     int pos;
     TOKENS type;
     string filename;
-    string value = NULL;
-    string fmtValue() {
-        if (this->type != NULL) {
-            return this->value;
-        }
-        else {
-            return "NULL";
-        }
-    };
+    string value = "NULL";
     string toString() const {
         char *buf = 0;
         snprintf(buf, 0, "<Token %s:%s type=%s value=%s>", this->filename,
