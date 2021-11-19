@@ -1,5 +1,5 @@
 /*
-SPDX - License - Identifier: MIT
+SPDX-License-Identifier: MIT
 Tooty-lang - A compiled and iterpreted language written in C++
 
 MIT License
