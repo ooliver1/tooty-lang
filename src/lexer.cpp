@@ -27,10 +27,14 @@ SOFTWARE.
 
 #include "tokens.hpp"
 
+#include <cassert>
 #include <list>
+#include <regex>
 #include <string>
 
 using std::list;
+using std::regex_search;
+using std::smatch;
 using std::string;
 
 class Lexer {
@@ -44,10 +48,11 @@ class Lexer {
     string filename;
     list<string> tokens;
     char getChar() const;
-    Token processIdent() const;
-    Token processString() const;
-    Token processNumber() const;
-    Token processSymbol() const;
+    Token processChar();
+    Token processIdent();
+    Token processString();
+    Token processNumber();
+    // Token processSymbol();
 };
 
 Lexer::Lexer(string filename, string source) {
@@ -56,3 +61,37 @@ Lexer::Lexer(string filename, string source) {
 }
 
 char Lexer::getChar() const { return this->source.at(this->pos); }
+
+Token Lexer::processIdent() {
+    smatch m;
+    string code = this->source.substr(this->pos);
+    bool search = regex_search(code, m, IDENT_RE);
+    assert(search);
+    return Token{this->filename, this->line, this->pos, TOKENS::IDENT, m.str()};
+};
+
+Token Lexer::processString() {
+    smatch m;
+    string code = this->source.substr(this->pos);
+    bool search = regex_search(code, m, STRING_RE);
+    assert(search);
+    return Token{this->filename, this->line, this->pos, TOKENS::STRING,
+                 m.str()};
+};
+
+Token Lexer::processNumber() {
+    smatch m;
+    string code = this->source.substr(this->pos);
+    bool search = regex_search(code, m, NUMBER_RE);
+    assert(search);
+    return Token{this->filename, this->line, this->pos, TOKENS::NUMBER,
+                 m.str()};
+};
+
+Token Lexer::processChar() {
+    smatch m;
+    string code = this->source.substr(this->pos);
+    bool search = regex_search(code, m, CHAR_RE);
+    assert(search);
+    return Token{this->filename, this->line, this->pos, TOKENS::CHAR, m.str()};
+};
