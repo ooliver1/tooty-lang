@@ -25,9 +25,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <regex>
 #include <string>
 #include <unordered_map>
 
+using std::basic_regex;
 using std::string;
 using std::unordered_map;
 
@@ -85,6 +87,9 @@ enum TOKENS
     PERCEQL,    // %=
     AT,         // @
     ELIP,       // ...
+    CMT,        // #
+    MCMTS,      // /*
+    MCMTE       // */
 };
 
 const unordered_map<string, TOKENS> SYMBOLS = {
@@ -112,6 +117,12 @@ const unordered_map<string, TOKENS> SYMBOLS = {
     {"<<", TOKENS::DBLESS},      {"<<=", TOKENS::DBLESSEQL},
     {"%", TOKENS::PERC},         {"%=", TOKENS::PERCEQL},
     {"@", TOKENS::AT},           {"...", TOKENS::ELIP},
+    {"#", TOKENS::CMT},          {"/*", TOKENS::MCMTS},
+    {"*/", TOKENS::MCMTE},
 };
 
-const string SYM = "()[]{}<>\\|/:;+-.*!@&%~^";
+const string SYM = "()[]{}<>\\|/:;+-.*=!@&%~^";
+const basic_regex<char> IDENT_RE{"/^[a-zA-Z_][a-zA-Z0-9]*/"};
+const basic_regex<char> NUMBER_RE{"/^[0-9]+/"};
+const basic_regex<char> STRING_RE{"/^\"[^\"]*\"/"};
+const basic_regex<char> CHAR_RE{"/^'.'/"};
