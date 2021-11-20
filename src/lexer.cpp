@@ -30,6 +30,7 @@ SOFTWARE.
 #include "tokens.hpp"
 
 #include <cassert>
+#include <ctype.h>
 #include <list>
 #include <regex>
 #include <string>
@@ -99,12 +100,13 @@ Token Lexer::processSymbol() {
     char c = this->getChar();
     char nchar = this->nextChar(1);
     try {
-        this->pos += 1;
-        return Token(this->filename, this->line, this->pos,
-                     SYMBOLS.at(string{c}), "");
+        int tmp = this->pos;
+        this->pos++;
+        return Token(this->filename, this->line, tmp, SYMBOLS.at(string{c}),
+                     "");
     }
     catch (const out_of_range &e) {
-        this->pos -= 1;
+        this->pos--;
         try {
             int tmp = this->pos;
             this->pos += 2;
@@ -131,6 +133,13 @@ vector<Token> Lexer::tokenize() {
     vector<Token> tokens;
     while (this->next()) {
         char c = this->getChar();
+        if (isspace(c)) {
+            if (c == '\n') {
+                this->line++;
+            }
+            this->pos++;
+            continue;
+        }
         if (c == '"') {
             tokens.push_back(this->processString());
         }
