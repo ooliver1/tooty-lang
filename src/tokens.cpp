@@ -44,7 +44,7 @@ Token::Token(string filename, int line, int pos, TOKENS type, string value) {
     }
 }
 
-static const char *temp[] = {
+static const char *types[] = {
     "IDENT",      "NUMBER",     "STRING",    "CHAR",    "LPAR",     "RPAR",
     "LSQB",       "RSQB",       "LBRACE",    "RBRACE",  "COLON",    "COLONEQL",
     "SEMI",       "PLUS",       "PLSEQL",    "MINUS",   "MINUSEQL", "STAR",
@@ -58,6 +58,6 @@ static const char *temp[] = {
 
 string Token::toString() const {
     return ("<Token " + this->filename + ":" + to_string(this->line) + ":"
-            + to_string(this->pos) + " type=" + temp[int{this->type}]
+            + to_string(this->pos) + " type=" + types[int{this->type}]
             + " value=" + this->value + ">");
 }
