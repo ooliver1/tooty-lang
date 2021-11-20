@@ -29,23 +29,25 @@ SOFTWARE.
 
 #include "tokens.hpp"
 
+#include <string>
+#include <vector>
+
 class Lexer {
   public:
-    Lexer(string filename, string source);
+    std::vector<Token> tokenize();
+    Lexer(std::string, std::string);
 
   private:
     int pos = 0;
     int line = 0;
-    string source;
-    string filename;
     bool next() const;
-    list<string> tokens;
+    std::string source;
     Token processChar();
+    std::string filename;
     char getChar() const;
     Token processIdent();
     Token processString();
     Token processNumber();
     Token processSymbol();
     char nextChar(int) const;
-    vector<Token> tokenize();
 };

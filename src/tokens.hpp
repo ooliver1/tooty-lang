@@ -27,18 +27,33 @@ SOFTWARE.
 
 #pragma once
 
+#include <regex>
+#include <string>
+
+const std::basic_regex<char> IDENT_RE{"^[a-zA-Z_][a-zA-Z0-9]*"};
+const std::basic_regex<char> NUMBER_RE{"^[0-9]+"};
+const std::basic_regex<char> STRING_RE{"^\"[^\"]*\""};
+const std::basic_regex<char> CHAR_RE{"^'.'"};
+
+const std::string SYMS = "()[]{}<>\\|/:;+-.*=!@&%~^";
+const std::string NUMS = "0123456789";
+const std::string IDENTS =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+
+enum class TOKENS;
+
 class Token {
   public:
-    Token(string, int, int, TOKENS, string);
+    Token(std::string, int, int, TOKENS, std::string);
     int pos;
     int line;
     TOKENS type;
-    string filename;
-    string value = "NULL";
-    string toString() const;
+    std::string filename;
+    std::string value = "NULL";
+    std::string toString() const;
 };
 
-enum TOKENS
+enum class TOKENS
 {
     IDENT,      // abc
     NUMBER,     // 123

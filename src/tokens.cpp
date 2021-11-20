@@ -28,11 +28,9 @@ SOFTWARE.
 #include "tokens.hpp"
 
 #include <cstdio>
-#include <regex>
 #include <string>
 #include <unordered_map>
 
-using std::basic_regex;
 using std::snprintf;
 using std::string;
 using std::to_string;
@@ -66,15 +64,6 @@ const unordered_map<string, TOKENS> SYMBOLS = {
     {"#", TOKENS::CMT},          {"/*", TOKENS::MCMTS},
     {"*/", TOKENS::MCMTE},
 };
-
-const basic_regex<char> IDENT_RE{"^[a-zA-Z_][a-zA-Z0-9]*"};
-const basic_regex<char> NUMBER_RE{"^[0-9]+"};
-const basic_regex<char> STRING_RE{"^\"[^\"]*\""};
-const basic_regex<char> CHAR_RE{"^'.'"};
-
-const string SYMS = "()[]{}<>\\|/:;+-.*=!@&%~^";
-const string NUMS = "0123456789";
-const string IDENTS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
 Token::Token(string filename, int line, int pos, TOKENS type, string value) {
     this->pos = pos;

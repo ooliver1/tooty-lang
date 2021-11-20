@@ -83,13 +83,27 @@ int main(int argc, char **argv) {
             }
             fclose(fp);
             cout << "File found" << endl;
-            Lexer lexer = {
-                file,
-            };
-            vector<Token> tokens = tokenize(file);
+            fseek(fp, 0, SEEK_END);
+            long lSize = ftell(fp);
+            rewind(fp);
+            char *buffer = (char *)malloc(sizeof(char) * lSize);
+            if (buffer == NULL) {
+                fputs("Memory error", stderr);
+                exit(2);
+            }
+            size_t result = fread(buffer, 1, lSize, fp);
+            if (result != lSize) {
+                fputs("Reading error", stderr);
+                exit(3);
+            }
+            Lexer lexer{file, string{buffer}};
+            vector<Token> tokens = lexer.tokenize();
+            for (int i = 0; i < tokens.size(); i++) {
+                cout << tokens[i].toString() << endl;
+            }
         }
+        return 0;
     }
-    return 0;
 }
 
 Flags getFlags(int argc, char **argv) {
