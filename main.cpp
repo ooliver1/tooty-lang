@@ -26,6 +26,8 @@ SOFTWARE.
 */
 
 #include "VERSION.hpp"
+#include "lexer.hpp"
+#include "tokens.hpp"
 
 #include <cstring>
 #include <iostream>
@@ -69,6 +71,23 @@ int main(int argc, char **argv) {
              << "-v, --version : displays the version (major.minor.micro)\n"
              << "-h, --help    : displays this help message and exits" << endl;
         return 0;
+    }
+    if (flags.files.size() != 0) {
+        for (int i = 0; i < flags.files.size(); i++) {
+            string file = flags.files[i];
+            cout << "Tooty-lang: " << file << ": ";
+            FILE *fp = fopen(file.c_str(), "r");
+            if (fp == NULL) {
+                cout << "File not found" << endl;
+                continue;
+            }
+            fclose(fp);
+            cout << "File found" << endl;
+            Lexer lexer = {
+                file,
+            };
+            vector<Token> tokens = tokenize(file);
+        }
     }
     return 0;
 }

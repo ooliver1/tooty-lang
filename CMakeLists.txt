@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(tooty VERSION 0.0.0)
 include_directories(./include)
+include_directories(./src)
 
 include(CTest)
 enable_testing()

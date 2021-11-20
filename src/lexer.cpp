@@ -25,6 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#pragma once
+
 #include "tokens.hpp"
 
 #include <cassert>
@@ -39,27 +41,6 @@ using std::regex_search;
 using std::smatch;
 using std::string;
 using std::vector;
-
-class Lexer {
-  public:
-    Lexer(string filename, string source);
-
-  private:
-    int pos = 0;
-    int line = 0;
-    string source;
-    string filename;
-    bool next() const;
-    list<string> tokens;
-    Token processChar();
-    char getChar() const;
-    Token processIdent();
-    Token processString();
-    Token processNumber();
-    Token processSymbol();
-    char nextChar(int) const;
-    vector<Token> tokenize();
-};
 
 Lexer::Lexer(string filename, string source) {
     this->filename = filename;
@@ -80,7 +61,7 @@ Token Lexer::processIdent() {
     bool search = regex_search(code, m, IDENT_RE);
     assert(search);
     return Token{this->filename, this->line, this->pos, TOKENS::IDENT, m.str()};
-};
+}
 
 Token Lexer::processString() {
     smatch m;
@@ -89,7 +70,7 @@ Token Lexer::processString() {
     assert(search);
     return Token{this->filename, this->line, this->pos, TOKENS::STRING,
                  m.str()};
-};
+}
 
 Token Lexer::processNumber() {
     smatch m;
@@ -98,7 +79,7 @@ Token Lexer::processNumber() {
     assert(search);
     return Token{this->filename, this->line, this->pos, TOKENS::NUMBER,
                  m.str()};
-};
+}
 
 Token Lexer::processChar() {
     smatch m;
@@ -106,7 +87,7 @@ Token Lexer::processChar() {
     bool search = regex_search(code, m, CHAR_RE);
     assert(search);
     return Token{this->filename, this->line, this->pos, TOKENS::CHAR, m.str()};
-};
+}
 
 Token Lexer::processSymbol() {
     if (this->getChar() == '"') {
@@ -142,7 +123,7 @@ Token Lexer::processSymbol() {
             }
         }
     }
-};
+}
 
 vector<Token> Lexer::tokenize() {
     vector<Token> tokens;
@@ -154,15 +135,15 @@ vector<Token> Lexer::tokenize() {
         if (c == '\'') {
             tokens.push_back(this->processChar());
         }
-        if (SYMS.find(c)) {
+        if (SYMS.find(c) != string::npos) {
             tokens.push_back(this->processSymbol());
         }
-        if (NUMS.find(c)) {
+        if (NUMS.find(c) != string::npos) {
             tokens.push_back(this->processNumber());
         }
-        if (IDENTS.find(c)) {
+        if (IDENTS.find(c) != string::npos) {
             tokens.push_back(this->processIdent());
         }
     }
     return tokens;
-};
+}
