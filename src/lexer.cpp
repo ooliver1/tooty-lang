@@ -60,8 +60,9 @@ Token Lexer::processIdent() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, IDENT_RE);
     assert(search);
+    int tmp = this->pos;
     this->pos += m.length();
-    return Token{this->filename, this->line, this->pos, TOKENS::IDENT, m.str()};
+    return Token{this->filename, this->line, tmp, TOKENS::IDENT, m.str()};
 }
 
 Token Lexer::processString() {
@@ -69,9 +70,9 @@ Token Lexer::processString() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, STRING_RE);
     assert(search);
+    int tmp = this->pos;
     this->pos += m.length();
-    return Token{this->filename, this->line, this->pos, TOKENS::STRING,
-                 m.str()};
+    return Token{this->filename, this->line, tmp, TOKENS::STRING, m.str()};
 }
 
 Token Lexer::processNumber() {
@@ -79,9 +80,9 @@ Token Lexer::processNumber() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, NUMBER_RE);
     assert(search);
+    int tmp = this->pos;
     this->pos += m.length();
-    return Token{this->filename, this->line, this->pos, TOKENS::NUMBER,
-                 m.str()};
+    return Token{this->filename, this->line, tmp, TOKENS::NUMBER, m.str()};
 }
 
 Token Lexer::processChar() {
@@ -89,8 +90,9 @@ Token Lexer::processChar() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, CHAR_RE);
     assert(search);
+    int tmp = this->pos;
     this->pos += m.length();
-    return Token{this->filename, this->line, this->pos, TOKENS::CHAR, m.str()};
+    return Token{this->filename, this->line, tmp, TOKENS::CHAR, m.str()};
 }
 
 Token Lexer::processSymbol() {
@@ -104,16 +106,18 @@ Token Lexer::processSymbol() {
     catch (const out_of_range &e) {
         this->pos -= 1;
         try {
+            int tmp = this->pos;
             this->pos += 2;
-            return Token(this->filename, this->line, this->pos,
+            return Token(this->filename, this->line, tmp,
                          SYMBOLS.at(string{"" + c + nchar}), "");
         }
         catch (const out_of_range &e) {
             this->pos -= 2;
             char nchar2 = this->nextChar(2);
             try {
+                int tmp = this->pos;
                 this->pos += 3;
-                return Token(this->filename, this->line, this->pos,
+                return Token(this->filename, this->line, tmp,
                              SYMBOLS.at(string{"" + c + nchar + nchar2}), "");
             }
             catch (const out_of_range &e) {

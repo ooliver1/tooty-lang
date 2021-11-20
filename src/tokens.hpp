@@ -31,7 +31,7 @@ SOFTWARE.
 #include <string>
 #include <unordered_map>
 
-const std::basic_regex<char> IDENT_RE{"^[a-zA-Z_][a-zA-Z0-9]*"};
+const std::basic_regex<char> IDENT_RE{"^[a-zA-Z_][a-zA-Z0-9_]*"};
 const std::basic_regex<char> NUMBER_RE{"^[0-9]+"};
 const std::basic_regex<char> STRING_RE{"^\"[^\"]*\""};
 const std::basic_regex<char> CHAR_RE{"^'.'"};
