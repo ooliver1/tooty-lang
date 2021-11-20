@@ -31,11 +31,14 @@ SOFTWARE.
 
 #include <cassert>
 #include <ctype.h>
+#include <iostream>
 #include <list>
 #include <regex>
 #include <string>
 #include <vector>
 
+using std::cout;
+using std::endl;
 using std::list;
 using std::out_of_range;
 using std::regex_search;
@@ -54,7 +57,7 @@ char Lexer::nextChar(int offset) const {
     return this->source.at(this->pos + offset);
 }
 
-bool Lexer::next() const { return this->pos < this->source.length(); }
+bool Lexer::next() const { return this->source.at(this->pos) != '\0'; }
 
 Token Lexer::processIdent() {
     smatch m;
@@ -111,7 +114,7 @@ Token Lexer::processSymbol() {
             int tmp = this->pos;
             this->pos += 2;
             return Token(this->filename, this->line, tmp,
-                         SYMBOLS.at(string{"" + c + nchar}), "");
+                         SYMBOLS.at(string{string() + c + nchar}), "");
         }
         catch (const out_of_range &e) {
             this->pos -= 2;
@@ -123,6 +126,8 @@ Token Lexer::processSymbol() {
                              SYMBOLS.at(string{"" + c + nchar + nchar2}), "");
             }
             catch (const out_of_range &e) {
+                cout << SYMBOLS.at(string{string() + '+' + '='}) << endl;
+                cout << c << nchar << nchar2 << endl;
                 assert(false);
             }
         }
@@ -132,7 +137,11 @@ Token Lexer::processSymbol() {
 vector<Token> Lexer::tokenize() {
     vector<Token> tokens;
     while (this->next()) {
+        cout << this->next() << endl;
         char c = this->getChar();
+        if (c == EOF) {
+            break;
+        }
         if (isspace(c)) {
             if (c == '\n') {
                 this->line++;
