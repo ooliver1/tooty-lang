@@ -88,9 +88,9 @@ int main(int argc, char **argv) {
                 exit(EXIT_FAILURE);
             }
             ss << input_file.rdbuf();
-            cout << ss.str() << endl;
             Lexer lexer{file, ss.str()};
             vector<Token> tokens = lexer.tokenize();
+            cout << tokens.size() << endl;
             for (int i = 0; i < tokens.size(); i++) {
                 cout << tokens[i].toString() << endl;
             }
