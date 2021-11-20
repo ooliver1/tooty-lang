@@ -129,9 +129,9 @@ const basic_regex<char> NUMBER_RE{"^[0-9]+"};
 const basic_regex<char> STRING_RE{"^\"[^\"]*\""};
 const basic_regex<char> CHAR_RE{"^'.'"};
 
-const string SYM = "()[]{}<>\\|/:;+-.*=!@&%~^'\"";
+const string SYMS = "()[]{}<>\\|/:;+-.*=!@&%~^";
 const string NUMS = "0123456789";
-const string IDENT = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+const string IDENTS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
 class Token {
   public:

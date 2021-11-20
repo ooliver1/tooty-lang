@@ -31,12 +31,14 @@ SOFTWARE.
 #include <list>
 #include <regex>
 #include <string>
+#include <vector>
 
 using std::list;
 using std::out_of_range;
 using std::regex_search;
 using std::smatch;
 using std::string;
+using std::vector;
 
 class Lexer {
   public:
@@ -47,14 +49,16 @@ class Lexer {
     int line = 0;
     string source;
     string filename;
+    bool next() const;
     list<string> tokens;
-    char getChar() const;
-    char nextChar(int) const;
     Token processChar();
+    char getChar() const;
     Token processIdent();
     Token processString();
     Token processNumber();
     Token processSymbol();
+    char nextChar(int) const;
+    vector<Token> tokenize();
 };
 
 Lexer::Lexer(string filename, string source) {
@@ -65,11 +69,10 @@ Lexer::Lexer(string filename, string source) {
 char Lexer::getChar() const { return this->source.at(this->pos); }
 
 char Lexer::nextChar(int offset) const {
-    if (this->pos + offset > this->source.length()) {
-        return NULL;
-    }
     return this->source.at(this->pos + offset);
 }
+
+bool Lexer::next() const { return this->pos < this->source.length(); }
 
 Token Lexer::processIdent() {
     smatch m;
@@ -139,4 +142,27 @@ Token Lexer::processSymbol() {
             }
         }
     }
+};
+
+vector<Token> Lexer::tokenize() {
+    vector<Token> tokens;
+    while (this->next()) {
+        char c = this->getChar();
+        if (c == '"') {
+            tokens.push_back(this->processString());
+        }
+        if (c == '\'') {
+            tokens.push_back(this->processChar());
+        }
+        if (SYMS.find(c)) {
+            tokens.push_back(this->processSymbol());
+        }
+        if (NUMS.find(c)) {
+            tokens.push_back(this->processNumber());
+        }
+        if (IDENTS.find(c)) {
+            tokens.push_back(this->processIdent());
+        }
+    }
+    return tokens;
 };
