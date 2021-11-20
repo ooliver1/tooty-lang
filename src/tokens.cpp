@@ -27,43 +27,14 @@ SOFTWARE.
 
 #include "tokens.hpp"
 
+#include "lexer.hpp"
+
 #include <cstdio>
 #include <string>
-#include <unordered_map>
 
 using std::snprintf;
 using std::string;
 using std::to_string;
-using std::unordered_map;
-
-const unordered_map<string, TOKENS> SYMBOLS = {
-    {"(", TOKENS::LPAR},         {")", TOKENS::RPAR},
-    {"[", TOKENS::LSQB},         {"]", TOKENS::RSQB},
-    {"{", TOKENS::LBRACE},       {"}", TOKENS::RBRACE},
-    {":", TOKENS::COLON},        {":=", TOKENS::COLONEQL},
-    {";", TOKENS::SEMI},         {"+", TOKENS::PLUS},
-    {"+=", TOKENS::PLSEQL},      {"-", TOKENS::MINUS},
-    {"-=", TOKENS::MINUSEQL},    {"*", TOKENS::STAR},
-    {"*=", TOKENS::STAREQL},     {"**", TOKENS::DBSTAR},
-    {"**=", TOKENS::DBSTAREQL},  {"/", TOKENS::SLASH},
-    {"/=", TOKENS::SLASHEQL},    {"//", TOKENS::DBSLASH},
-    {"//=", TOKENS::DBSLASHEQL}, {"\\", TOKENS::BACKSLASH},
-    {"|", TOKENS::PIPE},         {"||", TOKENS::DBPIPE},
-    {"|=", TOKENS::PIPEQL},      {"&", TOKENS::AMPER},
-    {"&&", TOKENS::DBAMPER},     {".", TOKENS::DOT},
-    {"=", TOKENS::EQL},          {"==", TOKENS::DBEQL},
-    {"===", TOKENS::TRPEQL},     {"!", TOKENS::EXCL},
-    {"!=", TOKENS::NTEQUL},      {"!==", TOKENS::NTDBEQL},
-    {"^", TOKENS::CARRET},       {"~", TOKENS::TILDE},
-    {">", TOKENS::GREAT},        {">=", TOKENS::GREATEQL},
-    {">>", TOKENS::DBGREAT},     {">>=", TOKENS::DBGREATEQL},
-    {"<", TOKENS::LESS},         {"<=", TOKENS::LESSEQL},
-    {"<<", TOKENS::DBLESS},      {"<<=", TOKENS::DBLESSEQL},
-    {"%", TOKENS::PERC},         {"%=", TOKENS::PERCEQL},
-    {"@", TOKENS::AT},           {"...", TOKENS::ELIP},
-    {"#", TOKENS::CMT},          {"/*", TOKENS::MCMTS},
-    {"*/", TOKENS::MCMTE},
-};
 
 Token::Token(string filename, int line, int pos, TOKENS type, string value) {
     this->pos = pos;

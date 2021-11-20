@@ -101,9 +101,13 @@ int main(int argc, char **argv) {
             for (int i = 0; i < tokens.size(); i++) {
                 cout << tokens[i].toString() << endl;
             }
+            fclose(fp);
+            free(buffer);
+            return 0;
         }
         return 0;
     }
+    return 0;
 }
 
 Flags getFlags(int argc, char **argv) {

@@ -27,6 +27,8 @@ SOFTWARE.
 
 #include "tokens.hpp"
 
+#include "lexer.hpp"
+
 #include <cassert>
 #include <list>
 #include <regex>
