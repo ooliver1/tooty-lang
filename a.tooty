@@ -5,7 +5,7 @@ else {
     print(bbb)
 }
 
-classs AAA(A) {
+class AAA(A) {
     fun AAA(this, a: int = 1, b: str = None):
         this.a = a
         this.b = b

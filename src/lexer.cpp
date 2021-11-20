@@ -51,14 +51,33 @@ Lexer::Lexer(string filename, string source) {
     this->source = source;
 }
 
-char Lexer::getChar() const { return this->source.at(this->pos); }
-
-char Lexer::nextChar(int offset) const {
-    return this->source.at(this->pos + offset);
+char Lexer::getChar() const {
+    try {
+        return this->source.at(this->pos);
+    }
+    catch (const out_of_range &) {
+        return EOF;
+    }
 }
 
-bool Lexer::next() const { return this->source.at(this->pos) != '\0'; }
+char Lexer::nextChar(int offset) const {
+    try {
+        return this->source.at(this->pos + offset);
+    }
+    catch (const out_of_range &) {
+        return EOF;
+    }
+}
 
+bool Lexer::next() const {
+    try {
+        this->source.at(this->pos);
+        return true;
+    }
+    catch (const out_of_range &) {
+        return false;
+    }
+}
 Token Lexer::processIdent() {
     smatch m;
     string code = this->source.substr(this->pos);
@@ -101,7 +120,6 @@ Token Lexer::processChar() {
 
 Token Lexer::processSymbol() {
     char c = this->getChar();
-    char nchar = this->nextChar(1);
     try {
         int tmp = this->pos;
         this->pos++;
@@ -110,7 +128,9 @@ Token Lexer::processSymbol() {
     }
     catch (const out_of_range &e) {
         this->pos--;
+        char nchar = '\0';
         try {
+            nchar = this->nextChar(1);
             int tmp = this->pos;
             this->pos += 2;
             return Token(this->filename, this->line, tmp,
@@ -118,15 +138,15 @@ Token Lexer::processSymbol() {
         }
         catch (const out_of_range &e) {
             this->pos -= 2;
-            char nchar2 = this->nextChar(2);
+            char nchar2 = '\0';
             try {
+                nchar2 = this->nextChar(2);
                 int tmp = this->pos;
                 this->pos += 3;
                 return Token(this->filename, this->line, tmp,
                              SYMBOLS.at(string{"" + c + nchar + nchar2}), "");
             }
-            catch (const out_of_range &e) {
-                cout << SYMBOLS.at(string{string() + '+' + '='}) << endl;
+            catch (const out_of_range &) {
                 cout << c << nchar << nchar2 << endl;
                 assert(false);
             }
@@ -137,7 +157,6 @@ Token Lexer::processSymbol() {
 vector<Token> Lexer::tokenize() {
     vector<Token> tokens;
     while (this->next()) {
-        cout << this->next() << endl;
         char c = this->getChar();
         if (c == EOF) {
             break;
