@@ -25,9 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "tokens.hpp"
-
 #include "lexer.hpp"
+
+#include "tokens.hpp"
 
 #include <cassert>
 #include <list>
@@ -60,6 +60,7 @@ Token Lexer::processIdent() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, IDENT_RE);
     assert(search);
+    this->pos += m.length();
     return Token{this->filename, this->line, this->pos, TOKENS::IDENT, m.str()};
 }
 
@@ -68,6 +69,7 @@ Token Lexer::processString() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, STRING_RE);
     assert(search);
+    this->pos += m.length();
     return Token{this->filename, this->line, this->pos, TOKENS::STRING,
                  m.str()};
 }
@@ -77,6 +79,7 @@ Token Lexer::processNumber() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, NUMBER_RE);
     assert(search);
+    this->pos += m.length();
     return Token{this->filename, this->line, this->pos, TOKENS::NUMBER,
                  m.str()};
 }
@@ -86,16 +89,11 @@ Token Lexer::processChar() {
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, CHAR_RE);
     assert(search);
+    this->pos += m.length();
     return Token{this->filename, this->line, this->pos, TOKENS::CHAR, m.str()};
 }
 
 Token Lexer::processSymbol() {
-    if (this->getChar() == '"') {
-        return this->processString();
-    }
-    else if (this->getChar() == '\'') {
-        return this->processChar();
-    }
     char c = this->getChar();
     char nchar = this->nextChar(1);
     try {

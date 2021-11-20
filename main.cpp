@@ -30,15 +30,20 @@ SOFTWARE.
 #include "tokens.hpp"
 
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <list>
+#include <sstream>
 #include <stdio.h>
 #include <string>
 #include <vector>
 
+using std::cerr;
 using std::cout;
 using std::endl;
+using std::ifstream;
 using std::list;
+using std::ostringstream;
 using std::string;
 using std::strstr;
 using std::vector;
@@ -75,39 +80,24 @@ int main(int argc, char **argv) {
     if (flags.files.size() != 0) {
         for (int i = 0; i < flags.files.size(); i++) {
             string file = flags.files[i];
-            cout << "Tooty-lang: " << file << ": ";
-            FILE *fp = fopen(file.c_str(), "r");
-            if (fp == NULL) {
-                cout << "File not found" << endl;
-                continue;
+            cout << "Tooty-lang: " << file << ": " << endl;
+            ostringstream ss = ostringstream{};
+            ifstream input_file(file);
+            if (!input_file.is_open()) {
+                cerr << "Could not open the file - '" << file << "'" << endl;
+                exit(EXIT_FAILURE);
             }
-            fclose(fp);
-            cout << "File found" << endl;
-            fseek(fp, 0, SEEK_END);
-            long lSize = ftell(fp);
-            rewind(fp);
-            char *buffer = (char *)malloc(sizeof(char) * lSize);
-            if (buffer == NULL) {
-                fputs("Memory error", stderr);
-                exit(2);
-            }
-            size_t result = fread(buffer, 1, lSize, fp);
-            if (result != lSize) {
-                fputs("Reading error", stderr);
-                exit(3);
-            }
-            Lexer lexer{file, string{buffer}};
+            ss << input_file.rdbuf();
+            cout << ss.str() << endl;
+            Lexer lexer{file, ss.str()};
             vector<Token> tokens = lexer.tokenize();
             for (int i = 0; i < tokens.size(); i++) {
                 cout << tokens[i].toString() << endl;
             }
-            fclose(fp);
-            free(buffer);
-            return 0;
         }
-        return 0;
+        exit(EXIT_SUCCESS);
     }
-    return 0;
+    exit(EXIT_SUCCESS);
 }
 
 Flags getFlags(int argc, char **argv) {
