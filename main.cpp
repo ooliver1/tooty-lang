@@ -90,7 +90,6 @@ int main(int argc, char **argv) {
             ss << input_file.rdbuf();
             Lexer lexer{file, ss.str()};
             vector<Token> tokens = lexer.tokenize();
-            cout << tokens.size() << endl;
             for (int i = 0; i < tokens.size(); i++) {
                 cout << tokens[i].toString() << endl;
             }

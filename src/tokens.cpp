@@ -29,10 +29,8 @@ SOFTWARE.
 
 #include "lexer.hpp"
 
-#include <cstdio>
 #include <string>
 
-using std::snprintf;
 using std::string;
 using std::to_string;
 
@@ -46,9 +44,20 @@ Token::Token(string filename, int line, int pos, TOKENS type, string value) {
     }
 }
 
+static const char *temp[] = {
+    "IDENT",      "NUMBER",     "STRING",    "CHAR",    "LPAR",     "RPAR",
+    "LSQB",       "RSQB",       "LBRACE",    "RBRACE",  "COLON",    "COLONEQL",
+    "SEMI",       "PLUS",       "PLSEQL",    "MINUS",   "MINUSEQL", "STAR",
+    "STAREQL",    "DBSTAR",     "DBSTAREQL", "SLASH",   "SLASHEQL", "DBSLASH",
+    "DBSLASHEQL", "BACKSLASH",  "PIPE",      "DBPIPE",  "PIPEQL",   "AMPER",
+    "DBAMPER",    "DOT",        "EQL",       "DBEQL",   "TRPEQL",   "EXCL",
+    "NTEQUL",     "NTDBEQL",    "CARRET",    "TILDE",   "GREAT",    "GREATEQL",
+    "DBGREAT",    "DBGREATEQL", "LESS",      "LESSEQL", "DBLESS",   "DBLESSEQL",
+    "PERC",       "PERCEQL",    "AT",        "ELIP",    "CMT",      "MCMTS",
+    "MCMTE"};
+
 string Token::toString() const {
-    char *buf = 0;
-    snprintf(buf, 0, "<Token %s:%s:%s type=%s value=%s>", this->filename,
-             this->line, this->pos, this->type, this->value);
-    return string{buf};
+    return ("<Token " + this->filename + ":" + to_string(this->line) + ":"
+            + to_string(this->pos) + " type=" + temp[int{this->type}]
+            + " value=" + this->value + ">");
 }

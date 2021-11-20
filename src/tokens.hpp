@@ -41,20 +41,7 @@ const std::string NUMS = "0123456789";
 const std::string IDENTS =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
-enum class TOKENS;
-
-class Token {
-  public:
-    Token(std::string, int, int, TOKENS, std::string);
-    int pos;
-    int line;
-    TOKENS type;
-    std::string filename;
-    std::string value = "NULL";
-    std::string toString() const;
-};
-
-enum class TOKENS
+enum TOKENS
 {
     IDENT,      // abc
     NUMBER,     // 123
@@ -111,6 +98,17 @@ enum class TOKENS
     CMT,        // #
     MCMTS,      // /*
     MCMTE       // */
+};
+
+class Token {
+  public:
+    Token(std::string, int, int, TOKENS, std::string);
+    int pos;
+    int line;
+    TOKENS type;
+    std::string filename;
+    std::string value = "NULL";
+    std::string toString() const;
 };
 
 const std::unordered_map<std::string, TOKENS> SYMBOLS = {
