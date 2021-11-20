@@ -85,8 +85,10 @@ Token Lexer::processIdent() {
     bool search = regex_search(code, m, IDENT_RE);
     assert(search);
     int tmp = this->pos;
+    int tmp2 = this->lpos;
     this->pos += m.length();
-    return Token{this->filename, this->line, tmp, TOKENS::IDENT, m.str()};
+    this->lpos += m.length();
+    return Token{this->filename, this->line, tmp, tmp2, TOKENS::IDENT, m.str()};
 }
 
 Token Lexer::processString() {
@@ -95,8 +97,11 @@ Token Lexer::processString() {
     bool search = regex_search(code, m, STRING_RE);
     assert(search);
     int tmp = this->pos;
+    int tmp2 = this->lpos;
     this->pos += m.length();
-    return Token{this->filename, this->line, tmp, TOKENS::STRING, m.str()};
+    this->lpos += m.length();
+    return Token{this->filename, this->line,     tmp,
+                 tmp2,           TOKENS::STRING, m.str()};
 }
 
 Token Lexer::processNumber() {
@@ -105,18 +110,22 @@ Token Lexer::processNumber() {
     bool search = regex_search(code, m, NUMBER_RE);
     assert(search);
     int tmp = this->pos;
+    int tmp2 = this->lpos;
     this->pos += m.length();
-    return Token{this->filename, this->line, tmp, TOKENS::NUMBER, m.str()};
+    this->lpos += m.length();
+    return Token{this->filename, this->line,     tmp,
+                 tmp2,           TOKENS::NUMBER, m.str()};
 }
 
 Token Lexer::processChar() {
     smatch m;
     string code = this->source.substr(this->pos);
     bool search = regex_search(code, m, CHAR_RE);
-    assert(search);
     int tmp = this->pos;
+    int tmp2 = this->lpos;
     this->pos += m.length();
-    return Token{this->filename, this->line, tmp, TOKENS::CHAR, m.str()};
+    this->lpos += m.length();
+    return Token{this->filename, this->line, tmp, tmp2, TOKENS::CHAR, m.str()};
 }
 
 Token Lexer::processSymbol() {
@@ -125,13 +134,16 @@ Token Lexer::processSymbol() {
     if (c2 == EOF) {
         try {
             int tmp = this->pos;
+            int tmp2 = this->lpos;
             this->pos++;
-            return Token(this->filename, this->line, tmp, SYMBOLS.at(string{c}),
-                         "");
+            this->lpos++;
+            return Token(this->filename, this->line, tmp, tmp2,
+                         SYMBOLS.at(string{c}), "");
         }
         catch (const out_of_range &e) {
             this->pos--;
-            throw UnknownToken{this->filename, this->line, this->pos,
+            this->lpos--;
+            throw UnknownToken{this->filename, this->line, this->lpos,
                                "Unknown symbol: " + c};
         }
     }
@@ -139,40 +151,53 @@ Token Lexer::processSymbol() {
     if (c3 == EOF) {
         try {
             int tmp = this->pos;
+            int tmp2 = this->lpos;
             this->pos += 2;
-            return Token(this->filename, this->line, tmp,
+            this->lpos += 3;
+            return Token(this->filename, this->line, tmp, tmp2,
                          SYMBOLS.at(string{string() + c + c2}), "");
         }
         catch (const out_of_range &e) {
             this->pos -= 2;
-            throw UnknownToken{this->filename, this->line, this->pos,
+            this->lpos -= 2;
+            throw UnknownToken{this->filename, this->line, this->lpos,
                                "Unknown symbol: " + c + c2};
         }
     }
     try {
         int tmp = this->pos;
+        int tmp2 = this->lpos;
         this->pos += 3;
-        return Token(this->filename, this->line, tmp,
+        this->lpos += 3;
+        return Token(this->filename, this->line, tmp, tmp2,
                      SYMBOLS.at(string{string() + c + c2 + c3}), "");
     }
     catch (const out_of_range &e) {
         this->pos -= 3;
+        this->lpos -= 3;
         try {
             int tmp = this->pos;
+            int tmp2 = this->lpos;
             this->pos += 2;
-            return Token(this->filename, this->line, tmp,
+            this->lpos += 2;
+            return Token(this->filename, this->line, tmp, tmp2,
                          SYMBOLS.at(string{string() + c + c2}), "");
         }
         catch (const out_of_range &e) {
             this->pos -= 2;
+            this->lpos -= 2;
             try {
                 int tmp = this->pos;
+                int tmp2 = this->lpos;
                 this->pos++;
-                return Token(this->filename, this->line, tmp,
+                this->lpos++;
+                return Token(this->filename, this->line, tmp, tmp2,
                              SYMBOLS.at(string{string() + c}), "");
             }
             catch (const out_of_range &e) {
-                throw UnknownToken{this->filename, this->line, this->pos,
+                this->pos--;
+                this->lpos--;
+                throw UnknownToken{this->filename, this->line, this->lpos,
                                    "Unknown symbol: " + c};
             }
         }
@@ -189,6 +214,7 @@ vector<Token> Lexer::tokenize() {
         if (isspace(c)) {
             if (c == '\n') {
                 this->line++;
+                this->lpos = 0;
             }
             this->pos++;
             continue;

@@ -40,6 +40,7 @@ class Lexer {
   private:
     int pos = 0;
     int line = 0;
+    int lpos = 0;
     bool next() const;
     std::string source;
     Token processChar();

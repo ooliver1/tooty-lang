@@ -33,13 +33,13 @@ SOFTWARE.
 
 class InvalidSyntax: virtual public std::exception {
   public:
-    const std::string pos;
+    const std::string lpos;
     const std::string line;
     const std::string file;
     const std::string message;
     explicit InvalidSyntax(const std::string file, const int line,
-                           const int pos, std::string message)
-        : file(file), line(std::to_string(line)), pos(std::to_string(pos)),
+                           const int lpos, std::string message)
+        : file(file), line(std::to_string(line)), lpos(std::to_string(lpos)),
           message(message){};
     virtual const char *what() const throw() {
         char *m;
@@ -47,7 +47,7 @@ class InvalidSyntax: virtual public std::exception {
         std::strcat(m, ":");
         std::strcat(m, line.c_str());
         std::strcat(m, ":");
-        std::strcat(m, pos.c_str());
+        std::strcat(m, lpos.c_str());
         std::strcat(m, ": ");
         std::strcat(m, message.c_str());
         return m;

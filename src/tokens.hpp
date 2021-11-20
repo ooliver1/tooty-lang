@@ -102,9 +102,10 @@ enum TOKENS
 
 class Token {
   public:
-    Token(std::string, int, int, TOKENS, std::string);
+    Token(std::string, int, int, int, TOKENS, std::string);
     int pos;
     int line;
+    int lpos;
     TOKENS type;
     std::string filename;
     std::string value = "NULL";

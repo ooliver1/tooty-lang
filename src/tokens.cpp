@@ -34,8 +34,10 @@ SOFTWARE.
 using std::string;
 using std::to_string;
 
-Token::Token(string filename, int line, int pos, TOKENS type, string value) {
+Token::Token(string filename, int line, int pos, int lpos, TOKENS type,
+             string value) {
     this->pos = pos;
+    this->lpos = lpos;
     this->line = line;
     this->type = type;
     this->filename = filename;
@@ -58,6 +60,7 @@ static const char *types[] = {
 
 string Token::toString() const {
     return ("<Token " + this->filename + ":" + to_string(this->line) + ":"
-            + to_string(this->pos) + " type=" + types[int{this->type}]
-            + " value=" + this->value + ">");
+            + to_string(this->lpos) + " (" + to_string(this->pos) + ")"
+            + " type=" + types[int{this->type}] + " value=" + this->value
+            + ">");
 }
