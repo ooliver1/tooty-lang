@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "lexer.hpp"
 
+#include "exceptions.hpp"
 #include "tokens.hpp"
 
 #include <cassert>
@@ -120,35 +121,59 @@ Token Lexer::processChar() {
 
 Token Lexer::processSymbol() {
     char c = this->getChar();
-    try {
-        int tmp = this->pos;
-        this->pos++;
-        return Token(this->filename, this->line, tmp, SYMBOLS.at(string{c}),
-                     "");
-    }
-    catch (const out_of_range &e) {
-        this->pos--;
-        char nchar = '\0';
+    char c2 = this->nextChar(1);
+    if (c2 == EOF) {
         try {
-            nchar = this->nextChar(1);
+            int tmp = this->pos;
+            this->pos++;
+            return Token(this->filename, this->line, tmp, SYMBOLS.at(string{c}),
+                         "");
+        }
+        catch (const out_of_range &e) {
+            this->pos--;
+            throw UnknownToken{this->filename, this->line, this->pos,
+                               "Unknown symbol: " + c};
+        }
+    }
+    char c3 = this->nextChar(2);
+    if (c3 == EOF) {
+        try {
             int tmp = this->pos;
             this->pos += 2;
             return Token(this->filename, this->line, tmp,
-                         SYMBOLS.at(string{string() + c + nchar}), "");
+                         SYMBOLS.at(string{string() + c + c2}), "");
         }
         catch (const out_of_range &e) {
             this->pos -= 2;
-            char nchar2 = '\0';
+            throw UnknownToken{this->filename, this->line, this->pos,
+                               "Unknown symbol: " + c + c2};
+        }
+    }
+    try {
+        int tmp = this->pos;
+        this->pos += 3;
+        return Token(this->filename, this->line, tmp,
+                     SYMBOLS.at(string{string() + c + c2 + c3}), "");
+    }
+    catch (const out_of_range &e) {
+        this->pos -= 3;
+        try {
+            int tmp = this->pos;
+            this->pos += 2;
+            return Token(this->filename, this->line, tmp,
+                         SYMBOLS.at(string{string() + c + c2}), "");
+        }
+        catch (const out_of_range &e) {
+            this->pos -= 2;
             try {
-                nchar2 = this->nextChar(2);
                 int tmp = this->pos;
-                this->pos += 3;
+                this->pos++;
                 return Token(this->filename, this->line, tmp,
-                             SYMBOLS.at(string{"" + c + nchar + nchar2}), "");
+                             SYMBOLS.at(string{string() + c}), "");
             }
-            catch (const out_of_range &) {
-                cout << c << nchar << nchar2 << endl;
-                assert(false);
+            catch (const out_of_range &e) {
+                throw UnknownToken{this->filename, this->line, this->pos,
+                                   "Unknown symbol: " + c};
             }
         }
     }
