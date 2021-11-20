@@ -33,6 +33,7 @@ SOFTWARE.
 #include <string>
 
 using std::list;
+using std::out_of_range;
 using std::regex_search;
 using std::smatch;
 using std::string;
@@ -48,11 +49,12 @@ class Lexer {
     string filename;
     list<string> tokens;
     char getChar() const;
+    char nextChar(int) const;
     Token processChar();
     Token processIdent();
     Token processString();
     Token processNumber();
-    // Token processSymbol();
+    Token processSymbol();
 };
 
 Lexer::Lexer(string filename, string source) {
@@ -61,6 +63,13 @@ Lexer::Lexer(string filename, string source) {
 }
 
 char Lexer::getChar() const { return this->source.at(this->pos); }
+
+char Lexer::nextChar(int offset) const {
+    if (this->pos + offset > this->source.length()) {
+        return NULL;
+    }
+    return this->source.at(this->pos + offset);
+}
 
 Token Lexer::processIdent() {
     smatch m;
@@ -94,4 +103,40 @@ Token Lexer::processChar() {
     bool search = regex_search(code, m, CHAR_RE);
     assert(search);
     return Token{this->filename, this->line, this->pos, TOKENS::CHAR, m.str()};
+};
+
+Token Lexer::processSymbol() {
+    if (this->getChar() == '"') {
+        return this->processString();
+    }
+    else if (this->getChar() == '\'') {
+        return this->processChar();
+    }
+    char c = this->getChar();
+    char nchar = this->nextChar(1);
+    try {
+        this->pos += 1;
+        return Token(this->filename, this->line, this->pos,
+                     SYMBOLS.at(string{c}), "");
+    }
+    catch (const out_of_range &e) {
+        this->pos -= 1;
+        try {
+            this->pos += 2;
+            return Token(this->filename, this->line, this->pos,
+                         SYMBOLS.at(string{"" + c + nchar}), "");
+        }
+        catch (const out_of_range &e) {
+            this->pos -= 2;
+            char nchar2 = this->nextChar(2);
+            try {
+                this->pos += 3;
+                return Token(this->filename, this->line, this->pos,
+                             SYMBOLS.at(string{"" + c + nchar + nchar2}), "");
+            }
+            catch (const out_of_range &e) {
+                assert(false);
+            }
+        }
+    }
 };
