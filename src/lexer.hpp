@@ -47,7 +47,6 @@ class Lexer {
     std::string filename;
     char getChar() const;
     Token processIdent();
-
     Token processString();
     Token processNumber();
     Token processSymbol();
