@@ -31,6 +31,7 @@ SOFTWARE.
 
 #include <string>
 
+using std::strcat;
 using std::string;
 using std::to_string;
 
@@ -42,7 +43,12 @@ Token::Token(string filename, int line, int pos, int lpos, TOKENS type,
     this->type = type;
     this->filename = filename;
     if (!value.empty()) {
-        this->value = value;
+        if (value == string("\n")) {
+            this->value = "\\n";
+        }
+        else {
+            this->value = value;
+        }
     }
 }
 
@@ -55,12 +61,23 @@ static const char *types[] = {
     "DBAMPER",    "DOT",        "EQL",       "DBEQL",   "TRPEQL",   "EXCL",
     "NTEQUL",     "NTDBEQL",    "CARRET",    "TILDE",   "GREAT",    "GREATEQL",
     "DBGREAT",    "DBGREATEQL", "LESS",      "LESSEQL", "DBLESS",   "DBLESSEQL",
-    "PERC",       "PERCEQL",    "AT",        "ELIP",    "CMT",      "MCMTS",
-    "MCMTE"};
+    "PERC",       "PERCEQL",    "AT",        "ELIP",    "NL",       "COMMA"};
 
 string Token::toString() const {
-    return ("<Token " + this->filename + ":" + to_string(this->line) + ":"
-            + to_string(this->lpos) + " (" + to_string(this->pos) + ")"
-            + " type=" + types[int{this->type}] + " value=" + this->value
-            + ">");
+    string t;
+    t += "<Token ";
+    t += this->filename;
+    t += ":";
+    t += to_string(this->line);
+    t += ":";
+    t += to_string(this->lpos);
+    t += " (";
+    t += to_string(this->pos);
+    t += ") ";
+    t += "type=";
+    t += types[int{this->type}];
+    t += " value=";
+    t += this->value;
+    t += ">";
+    return t;
 }

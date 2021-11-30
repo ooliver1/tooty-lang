@@ -38,9 +38,9 @@ class Lexer {
     Lexer(std::string, std::string);
 
   private:
-    int pos = 0;
-    int line = 0;
-    int lpos = 0;
+    int pos = 1;
+    int line = 1;
+    int lpos = 1;
     bool next() const;
     std::string source;
     Token processChar();

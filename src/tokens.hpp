@@ -35,8 +35,10 @@ const std::basic_regex<char> IDENT_RE{"^[a-zA-Z_][a-zA-Z0-9_]*"};
 const std::basic_regex<char> NUMBER_RE{"^[0-9]+"};
 const std::basic_regex<char> STRING_RE{"^\"[^\"]*\""};
 const std::basic_regex<char> CHAR_RE{"^'.'"};
+const std::basic_regex<char> CMT_RE{"^#.*"};
+const std::basic_regex<char> MULTI_CMT_RE{R"mmm(^\/\*(.|\n)*\*\/)mmm"};
 
-const std::string SYMS = "()[]{}<>\\|/:;+-.*=!@&%~^";
+const std::string SYMS = "()[]{}<>\\|/:;+-,.*=!@&%~^";
 const std::string NUMS = "0123456789";
 const std::string IDENTS =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
@@ -95,9 +97,8 @@ enum TOKENS
     PERCEQL,    // %=
     AT,         // @
     ELIP,       // ...
-    CMT,        // #
-    MCMTS,      // /*
-    MCMTE       // */
+    NL,         // \n
+    COMMA       // ,
 };
 
 class Token {
@@ -137,6 +138,4 @@ const std::unordered_map<std::string, TOKENS> SYMBOLS = {
     {"<<", TOKENS::DBLESS},      {"<<=", TOKENS::DBLESSEQL},
     {"%", TOKENS::PERC},         {"%=", TOKENS::PERCEQL},
     {"@", TOKENS::AT},           {"...", TOKENS::ELIP},
-    {"#", TOKENS::CMT},          {"/*", TOKENS::MCMTS},
-    {"*/", TOKENS::MCMTE},
-};
+    {",", TOKENS::COMMA}};

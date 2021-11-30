@@ -31,7 +31,7 @@ SOFTWARE.
 #include <exception>
 #include <string>
 
-class InvalidSyntax: virtual public std::exception {
+class InvalidSyntax: public std::exception {
   public:
     const std::string lpos;
     const std::string line;
@@ -42,19 +42,19 @@ class InvalidSyntax: virtual public std::exception {
         : file(file), line(std::to_string(line)), lpos(std::to_string(lpos)),
           message(message){};
     virtual const char *what() const throw() {
-        char *m;
-        std::strcat(m, file.c_str());
-        std::strcat(m, ":");
-        std::strcat(m, line.c_str());
-        std::strcat(m, ":");
-        std::strcat(m, lpos.c_str());
-        std::strcat(m, ": ");
-        std::strcat(m, message.c_str());
-        return m;
+        std::string m;
+        m += this->file;
+        m += ":";
+        m += this->line;
+        m += ":";
+        m += this->lpos;
+        m += ": ";
+        m += this->message;
+        return m.c_str();
     }
 };
 
-class UnknownToken: InvalidSyntax {
+class UnknownToken: public InvalidSyntax {
   public:
     explicit UnknownToken(const std::string file, const int line, const int pos,
                           std::string message)

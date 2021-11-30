@@ -26,10 +26,12 @@ SOFTWARE.
 */
 
 #include "VERSION.hpp"
+#include "exceptions.hpp"
 #include "lexer.hpp"
 #include "tokens.hpp"
 
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <list>
@@ -41,6 +43,7 @@ SOFTWARE.
 using std::cerr;
 using std::cout;
 using std::endl;
+using std::exception;
 using std::ifstream;
 using std::list;
 using std::ostringstream;
@@ -89,9 +92,21 @@ int main(int argc, char **argv) {
             }
             ss << input_file.rdbuf();
             Lexer lexer{file, ss.str()};
-            vector<Token> tokens = lexer.tokenize();
+            vector<Token> tokens;
+            try {
+                tokens = lexer.tokenize();
+            }
+            catch (UnknownToken const &exc) {
+                cout << "Unknown token" << endl;
+                cerr << "Exception caught " << exc.what() << endl;
+            }
+            catch (exception const &exc) {
+                cout << "Unknown exception" << endl;
+                cerr << "Exception caught " << exc.what() << endl;
+            }
+            cout << tokens.size() << endl;
             for (int i = 0; i < tokens.size(); i++) {
-                cout << tokens[i].toString() << endl;
+                cout << i << ": " << tokens[i].toString() << "\n";
             }
         }
         exit(EXIT_SUCCESS);

@@ -30,6 +30,7 @@ SOFTWARE.
 #include "exceptions.hpp"
 #include "tokens.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <ctype.h>
 #include <iostream>
@@ -38,6 +39,7 @@ SOFTWARE.
 #include <string>
 #include <vector>
 
+using std::count;
 using std::cout;
 using std::endl;
 using std::list;
@@ -54,7 +56,7 @@ Lexer::Lexer(string filename, string source) {
 
 char Lexer::getChar() const {
     try {
-        return this->source.at(this->pos);
+        return source.at(this->pos - 1);
     }
     catch (const out_of_range &) {
         return EOF;
@@ -63,7 +65,7 @@ char Lexer::getChar() const {
 
 char Lexer::nextChar(int offset) const {
     try {
-        return this->source.at(this->pos + offset);
+        return source.at(this->pos + offset - 1);
     }
     catch (const out_of_range &) {
         return EOF;
@@ -72,7 +74,7 @@ char Lexer::nextChar(int offset) const {
 
 bool Lexer::next() const {
     try {
-        this->source.at(this->pos);
+        source.at(this->pos - 1);
         return true;
     }
     catch (const out_of_range &) {
@@ -81,51 +83,78 @@ bool Lexer::next() const {
 }
 Token Lexer::processIdent() {
     smatch m;
-    string code = this->source.substr(this->pos);
+    string code = source.substr(this->pos - 1);
     bool search = regex_search(code, m, IDENT_RE);
-    assert(search);
-    int tmp = this->pos;
-    int tmp2 = this->lpos;
-    this->pos += m.length();
-    this->lpos += m.length();
-    return Token{this->filename, this->line, tmp, tmp2, TOKENS::IDENT, m.str()};
+    if (search) {
+        int tmp = this->pos;
+        int tmp2 = this->lpos;
+        this->pos += m.length();
+        this->lpos += m.length();
+        return Token{this->filename, this->line,    tmp,
+                     tmp2,           TOKENS::IDENT, m.str()};
+    }
+    else {
+        throw UnknownToken(this->filename, this->line, this->lpos,
+                           string("Unknown symbol (id): '") + this->getChar()
+                               + '\'');
+    }
 }
 
 Token Lexer::processString() {
     smatch m;
-    string code = this->source.substr(this->pos);
+    string code = source.substr(this->pos - 1);
     bool search = regex_search(code, m, STRING_RE);
-    assert(search);
-    int tmp = this->pos;
-    int tmp2 = this->lpos;
-    this->pos += m.length();
-    this->lpos += m.length();
-    return Token{this->filename, this->line,     tmp,
-                 tmp2,           TOKENS::STRING, m.str()};
+    if (search) {
+        int tmp = this->pos;
+        int tmp2 = this->lpos;
+        this->pos += m.length();
+        this->lpos += m.length();
+        return Token{this->filename, this->line,     tmp,
+                     tmp2,           TOKENS::STRING, m.str()};
+    }
+    else {
+        throw UnknownToken(this->filename, this->line, this->lpos,
+                           string("Unknown symbol (str): '") + this->getChar()
+                               + '\'');
+    }
 }
 
 Token Lexer::processNumber() {
     smatch m;
-    string code = this->source.substr(this->pos);
+    string code = source.substr(this->pos - 1);
     bool search = regex_search(code, m, NUMBER_RE);
-    assert(search);
-    int tmp = this->pos;
-    int tmp2 = this->lpos;
-    this->pos += m.length();
-    this->lpos += m.length();
-    return Token{this->filename, this->line,     tmp,
-                 tmp2,           TOKENS::NUMBER, m.str()};
+    if (search) {
+        int tmp = this->pos;
+        int tmp2 = this->lpos;
+        this->pos += m.length();
+        this->lpos += m.length();
+        return Token{this->filename, this->line,     tmp,
+                     tmp2,           TOKENS::NUMBER, m.str()};
+    }
+    else {
+        throw UnknownToken(this->filename, this->line, this->lpos,
+                           string("Unknown symbol (num): '") + this->getChar()
+                               + '\'');
+    }
 }
 
 Token Lexer::processChar() {
     smatch m;
-    string code = this->source.substr(this->pos);
+    string code = source.substr(this->pos - 1);
     bool search = regex_search(code, m, CHAR_RE);
-    int tmp = this->pos;
-    int tmp2 = this->lpos;
-    this->pos += m.length();
-    this->lpos += m.length();
-    return Token{this->filename, this->line, tmp, tmp2, TOKENS::CHAR, m.str()};
+    if (search) {
+        int tmp = this->pos;
+        int tmp2 = this->lpos;
+        this->pos += m.length();
+        this->lpos += m.length();
+        return Token{this->filename, this->line,   tmp,
+                     tmp2,           TOKENS::CHAR, m.str()};
+    }
+    else {
+        throw UnknownToken(this->filename, this->line, this->lpos,
+                           string("Unknown symbol (char): '") + this->getChar()
+                               + '\'');
+    }
 }
 
 Token Lexer::processSymbol() {
@@ -144,7 +173,7 @@ Token Lexer::processSymbol() {
             this->pos--;
             this->lpos--;
             throw UnknownToken{this->filename, this->line, this->lpos,
-                               "Unknown symbol: " + c};
+                               string("Unknown symbol (sym-1): '") + c + '\''};
         }
     }
     char c3 = this->nextChar(2);
@@ -153,7 +182,7 @@ Token Lexer::processSymbol() {
             int tmp = this->pos;
             int tmp2 = this->lpos;
             this->pos += 2;
-            this->lpos += 3;
+            this->lpos += 2;
             return Token(this->filename, this->line, tmp, tmp2,
                          SYMBOLS.at(string{string() + c + c2}), "");
         }
@@ -161,7 +190,8 @@ Token Lexer::processSymbol() {
             this->pos -= 2;
             this->lpos -= 2;
             throw UnknownToken{this->filename, this->line, this->lpos,
-                               "Unknown symbol: " + c + c2};
+                               string("Unknown symbol (sym-2): '") + c + '\''
+                                   + c2};
         }
     }
     try {
@@ -198,41 +228,96 @@ Token Lexer::processSymbol() {
                 this->pos--;
                 this->lpos--;
                 throw UnknownToken{this->filename, this->line, this->lpos,
-                                   "Unknown symbol: " + c};
+                                   string("Unknown symbol (sym-1): '") + c
+                                       + '\''};
             }
         }
     }
 }
 
 vector<Token> Lexer::tokenize() {
-    vector<Token> tokens;
-    while (this->next()) {
+    vector<Token> tokens{};
+    while (next()) {
         char c = this->getChar();
         if (c == EOF) {
             break;
         }
-        if (isspace(c)) {
+        else if (isspace(c)) {
             if (c == '\n') {
+                int tmp = this->pos;
+                int tmp2 = this->lpos;
+                int tmp3 = this->line;
+                for (int i = 1; this->nextChar(i) == '\n'; i++) {
+                    this->line++;
+                    this->pos++;
+                }
+                this->pos++;
                 this->line++;
-                this->lpos = 0;
+                this->lpos = 1;
+                tokens.push_back(Token{this->filename, tmp3, tmp, tmp2,
+                                       TOKENS::NL, string("\n")});
             }
-            this->pos++;
-            continue;
+            else {
+                this->lpos++;
+                this->pos++;
+            }
         }
-        if (c == '"') {
-            tokens.push_back(this->processString());
+        else if (c == '#') {
+            smatch m;
+            string code = source.substr(this->pos - 1);
+            bool search = regex_search(code, m, CMT_RE);
+            if (search) {
+                this->pos += m.length();
+                this->lpos = 0;
+                this->line++;
+            }
+            else {
+                throw UnknownToken{this->filename, this->line, this->lpos,
+                                   string("Unknown symbol (cmt): '") + c
+                                       + '\''};
+            }
         }
-        if (c == '\'') {
-            tokens.push_back(this->processChar());
+        else if (c == '/' and this->nextChar(1) == '*') {
+            smatch m;
+            string code = source.substr(this->pos - 1);
+            bool search = regex_search(code, m, MULTI_CMT_RE);
+            if (search) {
+                this->pos += m.length();
+                string::iterator b = m.str().begin();
+                string::iterator e = m.str().end();
+                int newlines = count(b, e, '\n');
+                this->line += newlines;
+                size_t found = m.str().find_last_of('\n');
+                if (found != string::npos) {
+                    this->lpos += (m.str().length() - found);
+                }
+            }
+            else {
+                throw UnknownToken{this->filename, this->line, this->lpos,
+                                   string("Unknown symbol (m-cmt): '") + c
+                                       + '\''};
+            }
         }
-        if (SYMS.find(c) != string::npos) {
-            tokens.push_back(this->processSymbol());
+        else if (c == '"') {
+            tokens.push_back(processString());
         }
-        if (NUMS.find(c) != string::npos) {
-            tokens.push_back(this->processNumber());
+        else if (c == '\'') {
+            tokens.push_back(processChar());
         }
-        if (IDENTS.find(c) != string::npos) {
-            tokens.push_back(this->processIdent());
+        else if (SYMS.find(c) != string::npos) {
+            tokens.push_back(processSymbol());
+            if () {
+            }
+        }
+        else if (NUMS.find(c) != string::npos) {
+            tokens.push_back(processNumber());
+        }
+        else if (IDENTS.find(c) != string::npos) {
+            tokens.push_back(processIdent());
+        }
+        else {
+            throw UnknownToken{this->filename, this->line, this->lpos,
+                               string("Unknown symbol: '") + c + '\''};
         }
     }
     return tokens;
