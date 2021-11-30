@@ -35,9 +35,9 @@ SOFTWARE.
 #include <ctype.h>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <regex>
 #include <string>
-#include <vector>
 
 using std::count;
 using std::cout;
@@ -237,6 +237,7 @@ Token Lexer::processSymbol() {
 
 vector<Token> Lexer::tokenize() {
     vector<Token> tokens{};
+    vector<char> brackets{};
     while (next()) {
         char c = this->getChar();
         if (c == EOF) {
@@ -306,7 +307,34 @@ vector<Token> Lexer::tokenize() {
         }
         else if (SYMS.find(c) != string::npos) {
             tokens.push_back(processSymbol());
-            if () {
+            switch (c) {
+                case '(':
+                case '[':
+                case '{':
+                    if (brackets.size() > MAXLEVEL) {
+                        throw TooManyBrackets(
+                            this->filename, this->line, this->lpos,
+                            string("Too many brackets, MAXLEVEL is"
+                                   + MAXLEVEL));
+                    }
+                    brackets.push_back(c);
+                    break;
+                case ')':
+                case ']':
+                case '}':
+                    if (brackets.empty()) {
+                        throw UnmatchedBracket(
+                            this->filename, this->line, this->lpos,
+                            string("Bracket mismatch, there is no opening"));
+                    }
+                    if (brackets.back() != c) {
+                        throw UnmatchedBracket(
+                            this->filename, this->line, this->lpos,
+                            string("Bracket mismatch, expected '")
+                                + brackets.back() + "'");
+                    }
+                    brackets.pop_back();
+                    break;
             }
         }
         else if (NUMS.find(c) != string::npos) {

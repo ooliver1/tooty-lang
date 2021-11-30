@@ -60,3 +60,17 @@ class UnknownToken: public InvalidSyntax {
                           std::string message)
         : InvalidSyntax(file, line, pos, message){};
 };
+
+class TooManyBrackets: public InvalidSyntax {
+  public:
+    explicit TooManyBrackets(const std::string file, const int line,
+                             const int pos, std::string message)
+        : InvalidSyntax(file, line, pos, message){};
+};
+
+class UnmatchedBracket: public InvalidSyntax {
+  public:
+    explicit UnmatchedBracket(const std::string file, const int line,
+                              const int pos, std::string message)
+        : InvalidSyntax(file, line, pos, message){};
+};

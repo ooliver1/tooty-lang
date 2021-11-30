@@ -32,6 +32,8 @@ SOFTWARE.
 #include <string>
 #include <vector>
 
+const int MAXLEVEL = 200;
+
 class Lexer {
   public:
     std::vector<Token> tokenize();
