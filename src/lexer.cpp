@@ -327,7 +327,9 @@ vector<Token> Lexer::tokenize() {
                             this->filename, this->line, this->lpos,
                             string("Bracket mismatch, there is no opening"));
                     }
-                    if (brackets.back() != c) {
+                    if (!((brackets.back() == '(' && c == ')')
+                          || (brackets.back() == '[' && c == ']')
+                          || (brackets.back() == '{' && c == '}'))) {
                         throw UnmatchedBracket(
                             this->filename, this->line, this->lpos,
                             string("Bracket mismatch, expected '")
