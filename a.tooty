@@ -1,5 +1,7 @@
 if a = 1 {
-    print(aaa)
+    print(
+        aaa
+    )
 }
 else {
     print(bbb)
@@ -10,12 +12,12 @@ class AAA(A) {
         this.a = a
         this.b = b
 
-    fun __str__(this): str:
+    fun __str__(this) -> str:
         return f"{this.a} {this.b}"
 
     @private
     @staticmeth
-    fun aaa(a): void {
+    fun aaa(a) -> void {
         return
     }
 }

@@ -98,7 +98,8 @@ enum TOKENS
     AT,         // @
     ELIP,       // ...
     NL,         // \n
-    COMMA       // ,
+    COMMA,      // ,
+    ARROW,      // ->
 };
 
 class Token {
@@ -138,4 +139,4 @@ const std::unordered_map<std::string, TOKENS> SYMBOLS = {
     {"<<", TOKENS::DBLESS},      {"<<=", TOKENS::DBLESSEQL},
     {"%", TOKENS::PERC},         {"%=", TOKENS::PERCEQL},
     {"@", TOKENS::AT},           {"...", TOKENS::ELIP},
-    {",", TOKENS::COMMA}};
+    {",", TOKENS::COMMA},        {"->", TOKENS::ARROW}};

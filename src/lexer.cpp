@@ -236,6 +236,7 @@ Token Lexer::processSymbol() {
 }
 
 vector<Token> Lexer::tokenize() {
+    bool ignore_nl = false;
     vector<Token> tokens{};
     vector<char> brackets{};
     while (next()) {
@@ -255,8 +256,10 @@ vector<Token> Lexer::tokenize() {
                 this->pos++;
                 this->line++;
                 this->lpos = 1;
-                tokens.push_back(Token{this->filename, tmp3, tmp, tmp2,
-                                       TOKENS::NL, string("\n")});
+                if (!ignore_nl) {
+                    tokens.push_back(Token{this->filename, tmp3, tmp, tmp2,
+                                           TOKENS::NL, string("\n")});
+                }
             }
             else {
                 this->lpos++;
@@ -336,6 +339,24 @@ vector<Token> Lexer::tokenize() {
                                 + brackets.back() + "'");
                     }
                     brackets.pop_back();
+                    break;
+            }
+            switch (c) {
+                case '(':
+                case '[':
+                    ignore_nl = true;
+                    break;
+                case ')':
+                case ']':
+                    if (!(count(brackets.begin(), brackets.end(), '(')
+                          || count(brackets.begin(), brackets.end(), '['))) {
+                        ignore_nl = false;
+                    }
+                    else if ((brackets.back() == '(' && c == ')')
+                             || (brackets.back() == '[' && c == ']')
+                             || (brackets.back() == '{' && c == '}')) {
+                        ignore_nl = false;
+                    }
                     break;
             }
         }

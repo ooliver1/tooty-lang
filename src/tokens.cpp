@@ -61,7 +61,8 @@ static const char *types[] = {
     "DBAMPER",    "DOT",        "EQL",       "DBEQL",   "TRPEQL",   "EXCL",
     "NTEQUL",     "NTDBEQL",    "CARRET",    "TILDE",   "GREAT",    "GREATEQL",
     "DBGREAT",    "DBGREATEQL", "LESS",      "LESSEQL", "DBLESS",   "DBLESSEQL",
-    "PERC",       "PERCEQL",    "AT",        "ELIP",    "NL",       "COMMA"};
+    "PERC",       "PERCEQL",    "AT",        "ELIP",    "NL",       "COMMA",
+    "ARROW"};
 
 string Token::toString() const {
     string t;
